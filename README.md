@@ -71,7 +71,7 @@ Restarts the API, can be useful if we have changed the main config.
 
 ## Config
 
-There is a main config file located in the `./config.ini` or `./configs/config.ini` folder that only contains the port and host on which the `API` will be launched. Other configs will also be located in the same folder.
+The main configuration file is located at `./config.ini` and it contains the port and host information for launching the API. Additional configuration files for specific bots can be found in the `./configs` folder.
 The config lists commands in the commands parameter, then each command is described in sections. Multiple parameters can be used in each section.
 
 ### Main config
