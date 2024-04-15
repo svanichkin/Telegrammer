@@ -2,42 +2,109 @@
 
 The bot features a streamlined interface designed for ease of operation. When sending a request to the bot, users have the option to include a parameter called type, which specifies the desired response format as either `ini` or `json`. The default response format is set to `json`.
 
-It is important to note that the uid parameter is mandatory for all bot methods, ensuring proper functionality. The bot is capable of processing both `GET` and `POST` requests.
+It is important to note that the `bid` and `uid` parameter is mandatory for all bot methods, ensuring proper functionality. The bot is capable of processing both `GET` and `POST` requests.
 
 In the event of an error, the bot will return `{"error":"error description"}`, along with the corresponding `HTTP status code`. For successful requests, the bot will return `{"key_name":"value for key"}` as part of the response.
 
 ### API → Send
 
-`/send?uid=123&text=Hello&type=ini`  
+`/send?bid=my_sample_bot&uid=123&text=Hello&type=ini`  
 The method sends text to the user.
 
-`/send?uid=123&html=<b>Hello</b>&type=json`  
+`/send?bid=my_sample_bot&uid=123&html=<b>Hello</b>&type=json`  
 The method sends text to the user in HTML format. Only simple tags are supported (see Telegram description).
 
-`/send?uid=123&photo=Base64&type=ini`  
+`/send?bid=my_sample_bot&uid=123&photo=Base64&type=ini`  
 The method parses Base64 and sends it as an image to the user.
 
-`/send?uid=123&photo=./sample/filename.png&type=json`  
+`/send?bid=my_sample_bot&uid=123&photo=./sample/filename.png&type=json`  
 The method sends the file specified in the local path to the user.
 
-`/send?uid=123&photo=http://myserver.com/filename.png&type=ini`  
+`/send?bid=my_sample_bot&uid=123&photo=http://myserver.com/filename.png&type=ini`  
 The method sends the file specified in the URL to the user.
 
 ### API → Check
 
-`/check?uid=123&chat=12345&type=json`  
+`/check?bid=my_sample_bot&uid=123&chat=12345&type=json`  
 The method checks if the user is in the specified chat. To perform the check, the bot must be in the specified chat.
 
 ### API → Data
 
-`/set?uid=123&key=mykey&value=myvalue&type=json`  
+`/set?bid=my_sample_bot&uid=123&key=mykey&value=myvalue&type=json`  
 The method saves the key and value in the storage, and this data will be located in the same file of the user created at the start.
 
-`/get?uid=123&key=mykey&type=json`  
+`/get?bid=my_sample_bot&uid=123&key=mykey&type=json`  
 The method retrieves the saved value from the storage.
 
-`/set?uid=123&keys=key1,key2&values=value1,value2&type=ini`  
+`/set?bid=my_sample_bot&uid=123&keys=key1,key2&values=value1,value2&type=ini`  
 The method saves keys and values in the storage, and this data will be located in the same file of the user created at the start.
 
-`/get?uid=123&keys=key1,key2&type=ini`  
+`/get?bid=my_sample_bot&uid=123&keys=key1,key2&type=ini`  
 The method retrieves the saved values from the storage.
+
+### API → Config
+
+`/config?set=url_encoded_text`  
+The method saves or overwrites the configuration in the config folder, using the text string provided. The text will be read, validated, and then placed in the config folder.
+
+`/config?set=./path/to/config/new_config.txt`  
+The method saves or overwrites the configuration in the config folder, using the specified local path. The file will be read, validated, and then placed in the config folder.
+
+`/config?set=http://server.com/new_config.ini`  
+The method saves or overwrites the configuration in the config folder, using the specified URL. The file will be read, validated, and then placed in the config folder. After the new configuration is set, the bot automatically applies all changes.
+
+`/config?bid=my_sample_bot`  
+The method returns the requested configuration.
+
+### API → Command
+
+`/command?bid=my_sample_bot&uid=123&do=command_name`  
+The method executes the bot command.
+
+## Config
+
+The config lists commands in the commands parameter, then each command is described in sections. Multiple parameters can be used in each section.
+
+### Config sample
+```
+# Bot id
+bid = my_sample_bot
+# Telegram bot id
+key = 2467348235:ABGvJ45chUygOPzjdpQRGFXH2ZGb_APc2QU
+
+# API server
+host = localhost
+port = 8010
+
+# Commands
+commands = start, command1, command2
+
+[start]
+# Not showed in menu
+showed = false
+# Do command
+action = "./scripts/action.py"
+
+[command1]
+# Get description for command
+description = "./scripts/description.py"
+# Do command
+action = "./scripts/action.py"
+
+[command2]
+# Get description for command
+description = "./scripts/description.py"
+# Do command
+action = "./scripts/action.py"
+```
+Configurations can be placed in the `./configs` folder or sent via `API` with the command `config?id=id_of_new_service&file=config_text`
+
+### Command parameters
+`showed = true/false` по умолчанию `showed = true`  
+This parameter determines whether the command will be visible in the bot's command menu or will be hidden. For example, the `/start` command, which is the default command of any bot, definitely does not need to be in the menu. Commands can also be called through `API`, which allows for more flexible logic building.
+
+`description = "./scripts/description.py"`  
+This is the description of the command that will be shown under the command in the bot’s menu. The text will be returned from the script. `ENV` variables such as `language, command, uid, id`, and others are set for the script, so that one script can handle any logic for any command.
+
+`action = "./scripts/action.py"`  
+When a command is called, a script will be executed which in turn will perform the necessary actions for the bot. `ENV` variables such as `language, command, uid, id`, and others are set for the script, so that one script can handle any logic for any command.
