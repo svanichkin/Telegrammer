@@ -61,8 +61,13 @@ The method saves or overwrites the configuration in the config folder, using the
 `/config?bid=my_sample_bot`  
 The method returns the requested configuration.
 
-`config?bid=id_of_new_service&restart=true`
-Перезапускает бота для указанного конфига. Может быть полезно если файл конфига исправлен вручную.
+### API → Restart
+
+`/restart?bid=id_of_new_service`
+Restarts the bot for the specified config. Can be useful if the config file has been manually edited.
+
+`/restart`
+Restarts the API, can be useful if we have changed the main config.
 
 ## Config
 
