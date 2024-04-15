@@ -42,39 +42,46 @@ The method saves keys and values in the storage, and this data will be located i
 `/get?bid=my_sample_bot&uid=123&keys=key1,key2&type=ini`  
 The method retrieves the saved values from the storage.
 
-### API → Config
-
-`/config?set=url_encoded_text`  
-The method saves or overwrites the configuration in the config folder, using the text string provided. The text will be read, validated, and then placed in the config folder.
-
-`/config?set=./path/to/config/new_config.txt`  
-The method saves or overwrites the configuration in the config folder, using the specified local path. The file will be read, validated, and then placed in the config folder.
-
-`/config?set=http://server.com/new_config.ini`  
-The method saves or overwrites the configuration in the config folder, using the specified URL. The file will be read, validated, and then placed in the config folder. After the new configuration is set, the bot automatically applies all changes.
-
-`/config?bid=my_sample_bot`  
-The method returns the requested configuration.
-
 ### API → Command
 
 `/command?bid=my_sample_bot&uid=123&do=command_name`  
 The method executes the bot command.
 
+### API → Config
+
+`/config?bid=id_of_new_service&set=url_encoded_text`  
+The method saves or overwrites the configuration in the config folder, using the text string provided. The text will be read, validated, and then placed in the config folder.
+
+`/config?bid=id_of_new_service&set=./path/to/config/new_config.txt`  
+The method saves or overwrites the configuration in the config folder, using the specified local path. The file will be read, validated, and then placed in the config folder.
+
+`/config?bid=id_of_new_service&set=http://server.com/new_config.ini`  
+The method saves or overwrites the configuration in the config folder, using the specified URL. The file will be read, validated, and then placed in the config folder. After the new configuration is set, the bot automatically applies all changes.
+
+`/config?bid=my_sample_bot`  
+The method returns the requested configuration.
+
+`config?bid=id_of_new_service&restart=true`
+Перезапускает бота для указанного конфига. Может быть полезно если файл конфига исправлен вручную.
+
 ## Config
 
+There is a main config file located in the `./configs/config.ini` folder that only contains the port and host on which the API will be launched. Other configs will also be located in the same folder.
 The config lists commands in the commands parameter, then each command is described in sections. Multiple parameters can be used in each section.
 
-### Config sample
+### Main config
+```
+# API server
+host = localhost
+port = 8010
+```
+
+### Sample config for telegram bot
 ```
 # Bot id
 bid = my_sample_bot
 # Telegram bot id
 key = 2467348235:ABGvJ45chUygOPzjdpQRGFXH2ZGb_APc2QU
-
-# API server
-host = localhost
-port = 8010
 
 # Commands
 commands = start, command1, command2
@@ -97,7 +104,6 @@ description = "./scripts/description.py"
 # Do command
 action = "./scripts/action.py"
 ```
-Configurations can be placed in the `./configs` folder or sent via `API` with the command `config?id=id_of_new_service&file=config_text`
 
 ### Command parameters
 `showed = true/false` по умолчанию `showed = true`  
