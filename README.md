@@ -63,10 +63,10 @@ The method returns the requested configuration.
 
 ### API → Restart
 
-`/restart?bid=id_of_new_service`
+`/restart?bid=id_of_new_service`  
 Restarts the bot for the specified config. Can be useful if the config file has been manually edited.
 
-`/restart`
+`/restart`  
 Restarts the API, can be useful if we have changed the main config.
 
 ## Config
