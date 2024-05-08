@@ -1,10 +1,8 @@
 package tele
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io"
-	"log"
 	"main/conf"
 	"main/data"
 	"os"
@@ -76,7 +74,7 @@ func initClient(client *Client) (*Client, error) {
 			}
 			sender := senderFromContext(context.Sender())
 			client.Bot.Senders[sender.Uid] = sender
-			output, err := python(client, sender, context, command.Action, command, context.Data(), "action", data.AllAliases(client.Bot.Bid, sender.Uid), checkAccess(client, command, sender.Uid, context.Chat().ID))
+			output, err := doPythonScript(client, sender, context, command.Action, command, context.Data(), "action", data.AllAliases(client.Bot.Bid, sender.Uid), checkAccess(client, command, sender.Uid, context.Chat().ID))
 			if err != nil {
 				return fmt.Errorf("error walking through bots directory: %v , otuput:\n%s", err, output)
 			}
@@ -145,7 +143,7 @@ func setCommands(context telebot.Context, client *Client) error {
 		if command.Showed {
 			sender := senderFromContext(context.Sender())
 			client.Bot.Senders[sender.Uid] = sender
-			output, err := python(client, sender, context, command.Detail, command, context.Data(), "detail", data.AllAliases(client.Bot.Bid, sender.Uid), checkAccess(client, command, sender.Uid, context.Chat().ID))
+			output, err := doPythonScript(client, sender, context, command.Detail, command, context.Data(), "detail", data.AllAliases(client.Bot.Bid, sender.Uid), checkAccess(client, command, sender.Uid, context.Chat().ID))
 			if err != nil {
 				return err
 			}
@@ -160,7 +158,7 @@ func setCommands(context telebot.Context, client *Client) error {
 
 }
 
-func python(client *Client, sender *conf.Sender, context telebot.Context, path string, command conf.Command, data string, dt string, aliases []string, access bool) (string, error) {
+func doPythonScript(client *Client, sender *conf.Sender, context telebot.Context, path string, command conf.Command, data string, dt string, aliases []string, access bool) (string, error) {
 
 	var cid string
 	if context != nil {
@@ -243,7 +241,7 @@ func DoAction(bid string, uid int64, cid int64, commandName string, d string, fi
 	if len(language) > 0 {
 		sender.LanguageCode = language
 	}
-	output, err := python(client, sender, nil, command.Action, command, d, "action", data.AllAliases(client.Bot.Bid, uid), checkAccess(client, command, sender.Uid, 0))
+	output, err := doPythonScript(client, sender, nil, command.Action, command, d, "action", data.AllAliases(client.Bot.Bid, uid), checkAccess(client, command, sender.Uid, 0))
 	if err != nil {
 		return fmt.Errorf("error walking through bots directory: %v , otuput:\n%s", err, output)
 	}
@@ -253,118 +251,6 @@ func DoAction(bid string, uid int64, cid int64, commandName string, d string, fi
 		}
 	}
 	return nil
-
-}
-
-func SendHtml(bid string, uid int64, cid int64, html string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	_, err := Clients[bid].Telebot.Send(&recepient, html, &telebot.SendOptions{ParseMode: telebot.ModeHTML})
-	return err
-
-}
-
-func SendMarkdown(bid string, uid int64, cid int64, md string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	_, err := Clients[bid].Telebot.Send(&recepient, md, &telebot.SendOptions{ParseMode: telebot.ModeMarkdown})
-	return err
-
-}
-
-func SendMarkdownV2(bid string, uid int64, cid int64, md string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	_, err := Clients[bid].Telebot.Send(&recepient, md, &telebot.SendOptions{ParseMode: telebot.ModeMarkdownV2})
-	return err
-
-}
-
-func SendMessage(bid string, uid int64, cid int64, text string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	_, err := Clients[bid].Telebot.Send(&recepient, text, &telebot.SendOptions{})
-	return err
-
-}
-
-func SendPhotoBase64(bid string, uid int64, cid int64, b64 string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	i := strings.Index(b64, ",")
-	if i < 0 {
-		log.Fatal("no comma")
-	}
-	b := base64.NewDecoder(base64.StdEncoding, strings.NewReader(b64[i+1:]))
-	p := &telebot.Photo{File: telebot.FromReader(b)}
-	_, err := Clients[bid].Telebot.SendAlbum(&recepient, telebot.Album{p})
-	return err
-
-}
-
-func SendPhotoUrl(bid string, uid int64, cid int64, url string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	p := &telebot.Photo{File: telebot.FromURL(url)}
-	_, err := Clients[bid].Telebot.SendAlbum(&recepient, telebot.Album{p})
-	return err
-
-}
-
-func SendPhotoPath(bid string, uid int64, cid int64, path string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	p := &telebot.Photo{File: telebot.FromDisk(path)}
-	_, err := Clients[bid].Telebot.SendAlbum(&recepient, telebot.Album{p})
-	return err
-
-}
-
-func SendFile(bid string, uid int64, cid int64, path string) error {
-
-	var recepient telebot.User
-	if cid != 0 {
-		recepient = telebot.User{ID: cid}
-	} else {
-		recepient = telebot.User{ID: uid}
-	}
-	_, err := Clients[bid].Telebot.Send(&recepient, &telebot.Document{FileName: path, File: telebot.FromDisk(path)})
-	return err
 
 }
 

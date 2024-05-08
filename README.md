@@ -14,6 +14,18 @@ The bot provides a mechanism for attaching additional identifiers called aliases
 
 You can differentiate access rights and create your own user groups, which allows you to flexibly configure access for specific users and/or chats.
 
+## Features
+
+- Single file startup
+- Low resource usage
+- Command rules
+- Simplicity and ease of use
+- Response format option
+- Support for GET and POST methods
+- Aliases for identifiers
+- User access configuration
+- Logic in Python files
+
 ### API → Send
 
 `/send?bid=sample_bot_id&uid=123&cid=234&text=Hello&type=ini`  
@@ -117,7 +129,7 @@ When the command is invoked, the environment variable `ENV` will contain a list 
 
 ### Main config.ini
 
-```
+```ini
 host = localhost
 port = 8010
 bots = ./bots
@@ -136,7 +148,7 @@ Specifies the `path` where the folder containing the bots will be located. Creat
 
 ### Sample config.ini for telegram bot
 
-```
+```ini
 bid = sample_bot_id
 key = 2467348235:ABGvJ45chUygOPzjdpQRGFXH2ZGb_APc2QU
 

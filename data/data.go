@@ -32,16 +32,6 @@ func SetKey(bid string, uid int64, key string, value string) error {
 
 }
 
-func createFolder(folderPath string) error {
-
-	err := os.MkdirAll(folderPath, 0755)
-	if err != nil {
-		return err
-	}
-	return err
-
-}
-
 func GetKey(bid string, uid int64, key string) (string, error) {
 
 	for _, bot := range conf.Config.Bots {
@@ -68,5 +58,17 @@ func RemoveKey(bid string, uid int64, key string) error {
 		}
 	}
 	return fmt.Errorf("bad data: bid %s not found", bid)
+
+}
+
+// Helpers
+
+func createFolder(folderPath string) error {
+
+	err := os.MkdirAll(folderPath, 0755)
+	if err != nil {
+		return err
+	}
+	return err
 
 }
